@@ -10,6 +10,7 @@
     <Folder Include="Controllers\" />
     <Folder Include="Data\" />
     <Folder Include="Domain\Dto\" />
+    <Folder Include="Mappers\" />
   </ItemGroup>
 
   <ItemGroup>
