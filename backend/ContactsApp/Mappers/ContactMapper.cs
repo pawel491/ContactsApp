@@ -1,4 +1,3 @@
-using System;
 using ContactsApp.Domain.Dto;
 using ContactsApp.Domain.Entities;
 
@@ -9,6 +8,7 @@ public static class ContactMapper
     public static ContactDto ToDto(this Contact contact)
     {
         return new (
+            contact.Id,
             contact.Email, 
             contact.Name, 
             contact.Surname, 
@@ -20,7 +20,12 @@ public static class ContactMapper
     }
     public static ContactListItemDto ToListItemDto(this Contact contact)
     {
-        return new (contact.Name, contact.Surname, contact.Email, contact.PhoneNumber);
+        return new (
+            contact.Id, 
+            contact.Name, 
+            contact.Surname, 
+            contact.Email, 
+            contact.PhoneNumber);
     }
     public static Contact ToEntity(this CreateContactDto dto, int categoryId, int? subcategoryId)
     {

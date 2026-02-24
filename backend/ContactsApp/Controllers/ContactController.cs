@@ -20,10 +20,11 @@ public class ContactController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ContactDto>>> GetContacts()
+    public async Task<ActionResult<IEnumerable<ContactListItemDto>>> GetContacts()
     {
         var contacts = await _dbContext.Contacts
             .Include(contact => contact.Category)
+            .Include(contact => contact.Subcategory)
             .ToListAsync();
 
         var dtos = contacts.Select(contact => contact.ToListItemDto());
