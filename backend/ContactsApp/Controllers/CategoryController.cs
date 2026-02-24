@@ -1,6 +1,6 @@
 using ContactsApp.Data;
-using ContactsApp.Domain.Entities;
-using Microsoft.AspNetCore.Http;
+using ContactsApp.Domain.Dto;
+using ContactsApp.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,17 +17,14 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCategories()
+    public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories()
     {
-        var categories = await _dbContext.Categories.Select(
-            category => new
-            {
-                category.Id,
-                category.Name,
-                Subcategories = category.Subcategories.Select(subcat => new { subcat.Id, subcat.Name}).ToList()
-            }
-        ).ToListAsync();
-        return Ok(categories);
+        var categories = await _dbContext.Categories
+            .Include(c => c.Subcategories)
+            .ToListAsync();
+        
+        var dtos = categories.Select(c => c.ToDto());
+        return Ok(dtos);
     }
 }
 
