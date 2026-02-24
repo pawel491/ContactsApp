@@ -14,4 +14,9 @@ public class Contact
     public required DateOnly DateOfBirth { get; set; }
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
+
+    public int? SubcategoryId { get; set; }
+    public Subcategory? Subcategory { get; set; }
+
+    public string? CustomSubcategory { get; set; }
 }

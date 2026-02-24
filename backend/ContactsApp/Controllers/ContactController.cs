@@ -35,6 +35,7 @@ public class ContactController : ControllerBase
     {
         var contact = await _dbContext.Contacts
             .Include(contact => contact.Category)
+            .Include(contact => contact.Subcategory)
             .FirstOrDefaultAsync(contact => contact.Id == id);
 
         return contact != null ? Ok(contact.ToDto()) : NotFound(); 
@@ -44,25 +45,33 @@ public class ContactController : ControllerBase
     public async Task<ActionResult<ContactDto>> CreateContact([FromBody] CreateContactDto dto)
     {
         if (await _dbContext.Contacts.AnyAsync(contact => contact.Email == dto.Email))
-        {
             return BadRequest("Contact with given email address already exists.");
-        }
 
         var category = await _dbContext.Categories.FirstOrDefaultAsync(category => category.Name.ToLower() == dto.CategoryName.ToLower());
-        if (category == null)
+        if (category == null) return BadRequest("Category doesn't exist");
+
+        int? subcategoryId = null;
+        Subcategory? subcategory = null;
+
+        if (!string.IsNullOrEmpty(dto.SubcategoryName))
         {
-            // create a new category
-            category = new Category { Name = dto.CategoryName };
-            _dbContext.Categories.Add(category);
-            //save now so Id is generated
-            await _dbContext.SaveChangesAsync();
+            //check if given subcategory exists for given category
+            subcategory = await _dbContext.Subcategories
+                .FirstOrDefaultAsync(subcat => subcat.Name.ToLower() == dto.SubcategoryName.ToLower() && subcat.CategoryId == category.Id);
+
+            if(subcategory == null) return BadRequest("Subcategory doesn't exist for given category");
+            subcategoryId = subcategory.Id;
         }
-        var contact = dto.ToEntity(category.Id);
+        var contact = dto.ToEntity(category.Id, subcategoryId);
         _dbContext.Contacts.Add(contact);
         await _dbContext.SaveChangesAsync();
 
         // to make sure .ToDto() won't fail
         contact.Category = category;
+        if(subcategory != null)
+        {
+            contact.Subcategory = subcategory;
+        }
 
         return CreatedAtAction(nameof(GetContact), new { id = contact.Id }, contact.ToDto());
     }
@@ -75,26 +84,25 @@ public class ContactController : ControllerBase
             return BadRequest("Another contact is already using given email address");
         }
 
-        var contact = await _dbContext.Contacts.Include(contact => contact.Category).FirstOrDefaultAsync(contact => contact.Id == id);
+        var contact = await _dbContext.Contacts.FindAsync(id);
         if(contact == null) return NotFound();
 
-        int newCategoryId = contact.CategoryId;
+        var category = await _dbContext.Categories
+            .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.CategoryName.ToLower());
+        if(category == null) return BadRequest("Category doesn't exist");
 
-        // if categoryName changed then newCategoryId need to be changed
-        if(contact.Category.Name.ToLower() != dto.CategoryName.ToLower())
+        int? subcategoryId = null;
+        if (!string.IsNullOrEmpty(dto.SubcategoryName))
         {
-            // check if already exists
-            var category = await _dbContext.Categories.FirstOrDefaultAsync(category => category.Name.ToLower() == dto.CategoryName.ToLower());
-            if(category == null)
-            {
-                // create new category
-                category = new Category { Name = dto.CategoryName };
-                _dbContext.Categories.Add(category);
-                await _dbContext.SaveChangesAsync();
-            }
-            newCategoryId = category.Id;
+            var subcategory = await _dbContext.Subcategories
+                .FirstOrDefaultAsync(subcat => subcat.Name.ToLower() == dto.SubcategoryName.ToLower() && subcat.CategoryId == category.Id);
+
+            if(subcategory == null) return BadRequest("Subcategory doesn't exist for given category");
+            
+            subcategoryId = subcategory.Id;
         }
-        dto.UpdateEntity(contact, newCategoryId);
+
+        dto.UpdateEntity(contact, category.Id, subcategoryId);
         await _dbContext.SaveChangesAsync();
         
         return NoContent();

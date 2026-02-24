@@ -8,25 +8,36 @@ public static class ContactMapper
 {
     public static ContactDto ToDto(this Contact contact)
     {
-        return new (contact.Email, contact.Name, contact.Surname, contact.PhoneNumber, contact.DateOfBirth, contact.Category.Name);
+        return new (
+            contact.Email, 
+            contact.Name, 
+            contact.Surname, 
+            contact.PhoneNumber, 
+            contact.DateOfBirth, 
+            contact.Category.Name, 
+            contact.Subcategory?.Name, 
+            contact.CustomSubcategory);
     }
     public static ContactListItemDto ToListItemDto(this Contact contact)
     {
         return new (contact.Name, contact.Surname, contact.Email, contact.PhoneNumber);
     }
-    public static Contact ToEntity(this CreateContactDto dto, int categoryId)
+    public static Contact ToEntity(this CreateContactDto dto, int categoryId, int? subcategoryId)
     {
         return new Contact {
             Name = dto.Name, 
             Surname = dto.Surname, 
             Email = dto.Email, 
-            Password = dto.Password, 
+            Password = BCrypt.Net.BCrypt.HashPassword(dto.Password), 
             PhoneNumber = dto.PhoneNumber, 
             DateOfBirth = dto.DateOfBirth, 
-            CategoryId = categoryId
+            CategoryId = categoryId,
+
+            SubcategoryId = subcategoryId,
+            CustomSubcategory = dto.CustomSubcategory
         };
     }
-    public static void UpdateEntity(this UpdateContactDto dto, Contact contact, int categoryId)
+    public static void UpdateEntity(this UpdateContactDto dto, Contact contact, int categoryId, int? subcategoryId)
     {
         contact.Name = dto.Name;
         contact.Surname = dto.Surname;
@@ -34,5 +45,8 @@ public static class ContactMapper
         contact.PhoneNumber = dto.PhoneNumber;
         contact.DateOfBirth = dto.DateOfBirth;
         contact.CategoryId = categoryId;
+
+        contact.SubcategoryId = subcategoryId;
+        contact.CustomSubcategory = dto.CustomSubcategory;
     }
 }

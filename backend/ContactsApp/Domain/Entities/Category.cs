@@ -8,4 +8,6 @@ public class Category
     public required string Name { get; set; }
 
     public List<Contact> Contacts { get; set; } = new();
+
+    public List<Subcategory> Subcategories { get; set; } = new();
 }

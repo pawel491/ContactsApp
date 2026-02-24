@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<Subcategory> Subcategories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +24,15 @@ public class AppDbContext : DbContext
                 new Category { Id = 1, Name = "służbowy"},
                 new Category { Id = 2, Name = "prywatny"},
                 new Category { Id = 3, Name = "inny" }
+            );
+
+        modelBuilder.Entity<Subcategory>()
+            .HasKey(c => c.Id);
+        modelBuilder.Entity<Subcategory>()
+            .HasData(
+                new Subcategory { Id = 1, Name = "szef", CategoryId = 1},
+                new Subcategory { Id = 2, Name = "klient", CategoryId = 1},
+                new Subcategory { Id = 3, Name = "współpracownik", CategoryId = 1}
             );
 
         modelBuilder.Entity<Contact>()
