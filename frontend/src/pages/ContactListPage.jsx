@@ -1,14 +1,37 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '../constValues';
+import { useNavigate } from 'react-router-dom';
 
 
 
 function ContactListPage() {
     const [contacts, setContacts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
+
+    const isLoggedIn = true;
+
     useEffect(() => {
         fetchContacts();
     }, []);
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Czy na pewno chcesz usunąć ten kontakt?")) return;
+
+        try {
+            const response = await fetch(`${API_URL}/contact/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                setContacts(prevContacts => prevContacts.filter(c => c.id !== id));
+            } else {
+                alert("Nie udało się usunąć kontaktu.");
+            }
+        } catch (err) {
+            console.error("Błąd podczas usuwania:", err);
+        }
+    }
 
     const fetchContacts = async () => {
         try {
@@ -43,17 +66,33 @@ function ContactListPage() {
                             <th>Nazwisko</th>
                             <th>Email</th>
                             <th>Numer Telefonu</th>
-                            {/* <th>Kategoria</th> */}
+                            <th>Akcje</th>
                         </tr>
                     </thead>
                     <tbody>
                         {contacts.map((contact) => (
-                            <tr key={contact.email}>
+                            <tr key={contact.id}>
                                 <td>{contact.name}</td>
                                 <td>{contact.surname}</td>
                                 <td>{contact.email}</td>
                                 <td>{contact.phoneNumber}</td>
-                                {/* <td>{contact.categoryName || contact.category}</td> */}
+                                <td>
+                                    <button
+                                        disabled={!isLoggedIn}
+                                        onClick={() => navigate(`/edit/${contact.id}`)}
+                                        style={{ marginRight: '10px' }}
+                                    >
+                                        Edytuj
+                                    </button>
+
+                                    <button
+                                        disabled={!isLoggedIn}
+                                        onClick={() => handleDelete(contact.id)}
+                                        style={{ backgroundColor: isLoggedIn ? 'red' : 'gray', color: 'white', border: 'none', padding: '5px 10px' }}
+                                    >
+                                        Usuń
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
