@@ -95,6 +95,11 @@ function ContactFormPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!isEditMode && formData.password.length < 8) {
+            alert("Błąd: Hasło musi składać się z minimum 8 znaków!");
+            return; // so invalid request is never sent to backend
+        }
+
         const url = isEditMode ? `${API_URL}/contact/${id}` : `${API_URL}/contact`;
         const method = isEditMode ? "PUT" : "POST";
         const token = localStorage.getItem('token');
@@ -133,7 +138,7 @@ function ContactFormPage() {
 
                 {/* Hide in edit mode */}
                 {!isEditMode && (
-                    <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Hasło" required />
+                    <input type="password" name="password" minLength="8" value={formData.password} onChange={handleChange} placeholder="Hasło" required />
                 )}
 
                 <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} placeholder="Telefon" required />

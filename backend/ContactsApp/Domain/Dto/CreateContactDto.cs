@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ContactsApp.Domain.Dto;
 
 public record class CreateContactDto(
     string Name, 
     string Surname, 
     string Email, 
+    [MinLength(8, ErrorMessage = "The password must be at least 8 characters long.")]
     string Password, 
     string PhoneNumber, 
     DateOnly DateOfBirth, 
