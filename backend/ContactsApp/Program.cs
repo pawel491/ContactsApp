@@ -59,4 +59,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+DbInitializer.Seed(app);
 app.Run();
