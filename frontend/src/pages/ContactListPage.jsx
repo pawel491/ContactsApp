@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { API_URL } from '../constValues';
+import { API_URL } from '../GlobalConst';
 import { useNavigate } from 'react-router-dom';
 
 
