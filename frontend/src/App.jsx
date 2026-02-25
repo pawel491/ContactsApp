@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
-import './App.css';
 import ContactListPage from './pages/ContactListPage';
 import ContactFormPage from './pages/ContactFormPage';
 import LoginForm from './components/LoginForm';

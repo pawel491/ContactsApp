@@ -23,7 +23,6 @@ function LoginForm({ onLoginSuccess }) {
 
                 // Save token to local storage
                 localStorage.setItem('token', data.token);
-
                 onLoginSuccess();
             } else {
                 setError('Nieprawidłowy e-mail lub hasło.');

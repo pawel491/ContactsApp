@@ -29,7 +29,7 @@ function ContactFormPage() {
                 'Authorization': `Bearer ${token}`
             }
         };
-
+        // fetch all possible categories(and their subcategories)
         fetch(`${API_URL}/category`, requestOptions)
             .then(response => {
                 // if 4xx or 5xx then stop and throw
@@ -45,6 +45,7 @@ function ContactFormPage() {
                 }
             });
 
+        // fetch data of edited contact
         if (isEditMode) {
             fetch(`${API_URL}/contact/${id}`, requestOptions)
                 .then(response => {
