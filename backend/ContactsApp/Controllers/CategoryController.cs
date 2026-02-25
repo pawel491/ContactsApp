@@ -1,6 +1,7 @@
 using ContactsApp.Data;
 using ContactsApp.Domain.Dto;
 using ContactsApp.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace ContactsApp.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CategoryController : ControllerBase
 {
     private readonly AppDbContext _dbContext;

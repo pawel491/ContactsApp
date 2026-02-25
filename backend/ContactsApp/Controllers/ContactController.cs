@@ -3,6 +3,7 @@ using ContactsApp.Data;
 using ContactsApp.Domain.Dto;
 using ContactsApp.Domain.Entities;
 using ContactsApp.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace ContactsApp.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ContactController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
@@ -20,6 +22,7 @@ public class ContactController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<ContactListItemDto>>> GetContacts()
     {
         var contacts = await _dbContext.Contacts
