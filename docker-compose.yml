@@ -16,6 +16,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
   backend:
     container_name: contacts-backend
     build:
@@ -29,3 +30,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  frontend:
+    container_name: contacts-frontend
+    build:
+      context: ./frontend
+    ports:
+      - 5173:5173
+    depends_on:
+      - backend
