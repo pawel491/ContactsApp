@@ -110,12 +110,12 @@ function ContactFormPage() {
 
         if (response.ok) {
             navigate('/');
-        } else if (response.status == 401) {
+        } else if (response.status === 401) {
             alert("Brak uprawnień. Zaloguj się.");
-        }
-        else {
-            alert("Coś poszło nie tak! Sprawdź konsolę");
-            console.error(response.text());
+        } else {
+            const errorMessage = await response.text();
+            alert(`Błąd zapisu: ${errorMessage}`);
+            console.error("Szczegóły błędu:", errorMessage);
         }
     }
     const selectedCategory = categories.find(c => c.name === formData.categoryName);

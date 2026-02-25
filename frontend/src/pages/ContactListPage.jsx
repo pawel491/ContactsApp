@@ -81,7 +81,7 @@ function ContactListPage({ isLoggedIn }) {
                                     <button
                                         disabled={!isLoggedIn}
                                         onClick={() => navigate(`/edit/${contact.id}`)}
-                                        style={{ backgroundColor: isLoggedIn ? 'blue' : 'gray', marginRight: '10px' }}
+                                        style={{ backgroundColor: isLoggedIn ? 'green' : 'gray', marginRight: '10px' }}
                                     >
                                         Edytuj
                                     </button>
