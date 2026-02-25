@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ContactsApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260223133906_InitialDatabaseCreate")]
-    partial class InitialDatabaseCreate
+    [Migration("20260225101719_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,23 @@ namespace ContactsApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "służbowy"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "prywatny"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "inny"
+                        });
                 });
 
             modelBuilder.Entity("ContactsApp.Domain.Entities.Contact", b =>
@@ -52,6 +69,9 @@ namespace ContactsApp.Migrations
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("CustomSubcategory")
+                        .HasColumnType("text");
 
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
@@ -72,6 +92,9 @@ namespace ContactsApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("SubcategoryId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
@@ -83,7 +106,51 @@ namespace ContactsApp.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("SubcategoryId");
+
                     b.ToTable("Contacts");
+                });
+
+            modelBuilder.Entity("ContactsApp.Domain.Entities.Subcategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Subcategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            Name = "szef"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            Name = "klient"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            Name = "współpracownik"
+                        });
                 });
 
             modelBuilder.Entity("ContactsApp.Domain.Entities.Contact", b =>
@@ -94,12 +161,31 @@ namespace ContactsApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ContactsApp.Domain.Entities.Subcategory", "Subcategory")
+                        .WithMany()
+                        .HasForeignKey("SubcategoryId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Subcategory");
+                });
+
+            modelBuilder.Entity("ContactsApp.Domain.Entities.Subcategory", b =>
+                {
+                    b.HasOne("ContactsApp.Domain.Entities.Category", "Category")
+                        .WithMany("Subcategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Category");
                 });
 
             modelBuilder.Entity("ContactsApp.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Contacts");
+
+                    b.Navigation("Subcategories");
                 });
 #pragma warning restore 612, 618
         }

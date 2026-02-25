@@ -106,30 +106,6 @@ namespace ContactsApp.Migrations
                     b.HasIndex("SubcategoryId");
 
                     b.ToTable("Contacts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            DateOfBirth = new DateOnly(2000, 1, 1),
-                            Email = "test@aa.aa",
-                            Name = "Test",
-                            Password = "somepassword",
-                            PhoneNumber = "+48123123123",
-                            Surname = "Testowy"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 2,
-                            DateOfBirth = new DateOnly(2005, 3, 3),
-                            Email = "testtest@aa.aa",
-                            Name = "TestDrugi",
-                            Password = "somepasswordlonger",
-                            PhoneNumber = "+48999999999",
-                            Surname = "TestowyDwa"
-                        });
                 });
 
             modelBuilder.Entity("ContactsApp.Domain.Entities.Subcategory", b =>
