@@ -23,14 +23,35 @@ function ContactFormPage() {
     });
 
     useEffect(() => {
-        fetch(`${API_URL}/category`)
-            .then(res => res.json())
+        const token = localStorage.getItem('token');
+        const requestOptions = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        };
+
+        fetch(`${API_URL}/category`, requestOptions)
+            .then(response => {
+                // if 4xx or 5xx then stop and throw
+                if (!response.ok) throw new Error(response.status);
+                return response.json();
+            })
             .then(data => setCategories(data))
-            .catch(err => console.error("Błąd pobierania kategorii:", err))
+            .catch(err => {
+                if (err.message === '401') {
+                    alert("Brak uprawnień. Zaloguj się.");
+                } else {
+                    console.error("Błąd:", err);
+                }
+            });
 
         if (isEditMode) {
-            fetch(`${API_URL}/contact/${id}`)
-                .then(response => response.json())
+            fetch(`${API_URL}/contact/${id}`, requestOptions)
+                .then(response => {
+                    // if 4xx or 5xx then stop and throw
+                    if (!response.ok) throw new Error(response.status);
+                    return response.json();
+                })
                 .then(data => {
                     setFormData({
                         name: data.name || '',
@@ -44,7 +65,13 @@ function ContactFormPage() {
                         customSubcategory: data.customSubcategory || ''
                     });
                 })
-                .catch(err => console.error("Error fetching contact:", err));
+                .catch(err => {
+                    if (err.message === '401') {
+                        alert("Brak uprawnień. Zaloguj się.");
+                    } else {
+                        alert("Błąd:", err);
+                    }
+                });
         }
     }, [id, isEditMode]);
 
@@ -55,6 +82,7 @@ function ContactFormPage() {
         setFormData(prev => {
             const newData = { ...prev, [name]: value };
 
+            // if categoryName changed then reset those fields
             if (name === 'categoryName') {
                 newData.subcategoryName = '';
                 newData.customSubcategory = '';
@@ -69,17 +97,25 @@ function ContactFormPage() {
 
         const url = isEditMode ? `${API_URL}/contact/${id}` : `${API_URL}/contact`;
         const method = isEditMode ? "PUT" : "POST";
+        const token = localStorage.getItem('token');
 
         const response = await fetch(url, {
             method: method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify(formData)
         })
 
         if (response.ok) {
             navigate('/');
-        } else {
-            alert("Coś poszło nie tak!");
+        } else if (response.status == 401) {
+            alert("Brak uprawnień. Zaloguj się.");
+        }
+        else {
+            alert("Coś poszło nie tak! Sprawdź konsolę");
+            console.error(response.text());
         }
     }
     const selectedCategory = categories.find(c => c.name === formData.categoryName);

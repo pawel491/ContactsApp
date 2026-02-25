@@ -4,12 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-function ContactListPage() {
+function ContactListPage({ isLoggedIn }) {
     const [contacts, setContacts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
-
-    const isLoggedIn = true;
 
     useEffect(() => {
         fetchContacts();
@@ -19,8 +17,12 @@ function ContactListPage() {
         if (!window.confirm("Czy na pewno chcesz usunąć ten kontakt?")) return;
 
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${API_URL}/contact/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
 
             if (response.ok) {
@@ -41,7 +43,6 @@ function ContactListPage() {
             }
 
             const data = await response.json();
-            console.log(data);
             setContacts(data);
         } catch (err) {
             console.error("Error fetching contacts:", err);
@@ -80,7 +81,7 @@ function ContactListPage() {
                                     <button
                                         disabled={!isLoggedIn}
                                         onClick={() => navigate(`/edit/${contact.id}`)}
-                                        style={{ marginRight: '10px' }}
+                                        style={{ backgroundColor: isLoggedIn ? 'blue' : 'gray', marginRight: '10px' }}
                                     >
                                         Edytuj
                                     </button>
