@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// retrieve from appsettings.json
 var frontendUrl = builder.Configuration["Frontend:Url"];
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var AllowFrontendOrigins = "_allowFrontendOrigins";
@@ -60,5 +61,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+//seed app with one contact so you can log in
 DbInitializer.Seed(app);
 app.Run();

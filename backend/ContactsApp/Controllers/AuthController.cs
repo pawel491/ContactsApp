@@ -32,7 +32,6 @@ public class AuthController : ControllerBase
 
         var jwtToken = _jwtService.GenerateJwtToken(user.Id, user.Email);
 
-        // 4. Zwracamy obiekt JSON z tokenem
         return Ok(new { token = jwtToken });
     }
 

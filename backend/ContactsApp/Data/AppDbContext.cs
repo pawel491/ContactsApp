@@ -21,7 +21,7 @@ public class AppDbContext : DbContext
             .HasKey(c => c.Id);
         modelBuilder.Entity<Category>()
             .HasData(
-                new Category { Id = 1, Name = "służbowy"},
+                new Category { Id = 1, Name = "służbowy"}, // only this category will have subcategories
                 new Category { Id = 2, Name = "prywatny"},
                 new Category { Id = 3, Name = "inny" }
             );

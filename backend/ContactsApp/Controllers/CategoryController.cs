@@ -19,6 +19,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
+    // returns list of categories with their subcategories
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories()
     {
         var categories = await _dbContext.Categories
